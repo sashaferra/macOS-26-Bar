@@ -1,0 +1,27 @@
+This is a simple translator app using Google Translate API and MeCab for Japanese readings (kana/romaji).
+To run:
+1. Replace the placeholder API key in the code with your actual Google API key.
+2. Install MeCab on your Mac:
+   brew install mecab mecab-ipadic
+3. Build and run in Xcode.
+
+Это простое приложение-переводчик, использующее Google Translate API и MeCab для отображения японского текста (кана/ромадзи).
+Как запустить:
+1. Замените фейковый API-ключ на свой Google API ключ.
+2. Установите MeCab на Mac:
+   brew install mecab mecab-ipadic
+3. Соберите и запустите в Xcode.
+
+これはGoogle翻訳APIとMeCab（かな・ローマ字変換）を使ったシンプルな翻訳アプリです。
+使い方：
+1. コード内のAPIキーを自分のGoogle APIキーに置き換えてください。
+2. MeCabをインストール：
+   brew install mecab mecab-ipadic
+3. Xcodeでビルドして実行。
+
+Це простий додаток-перекладач, що використовує Google Translate API та MeCab для японського тексту (кана/ромаджі).
+Щоб запустити:
+1. Замініть фейковий API-ключ у коді на свій Google API ключ.
+2. Встановіть MeCab на Mac:
+   brew install mecab mecab-ipadic
+3. Зберіть і запустіть у Xcode.

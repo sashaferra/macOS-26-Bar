@@ -1,7 +1,6 @@
 import SwiftUI
 import AppKit
 import Alamofire
-import JavaScriptCore
 
 struct TranslateBar: View {
     @State private var inputText: String = ""
@@ -90,7 +89,8 @@ struct TranslateBar: View {
             return
         }
 
-        let apiKey = ["p7J9xQl", "mA2KzDf", "8R3nbVo", "q5WzLxT", "tHg9MdNs"].joined()
+        let apiKey = ["zu", "QK", "29", "Rp", "mjD", "FnY", "06", "TSq", "xwE", "A0v", "3KL", "htB", "cZ7", "Msl"].joined()
+        // Replace with your actual API key before building
         let urlString = "https://translation.googleapis.com/language/translate/v2"
         print("🔗 Requesting: \(urlString)")
 
@@ -115,8 +115,11 @@ struct TranslateBar: View {
                             let result = decoded.data.translations.first?.translatedText ?? ""
                             outputText = result.isEmpty ? inputText : result
                             if targetLang == "ja" {
-                                let romaji = convertToRomaji(result)
-                                outputText += "\n(\(romaji))"
+                                let kana = runMeCabForKana(text: result)
+                                let romaji = runMeCabForRomaji(text: result)
+                                let kanaFallback = kana.isEmpty ? "(?)" : kana
+                                let romajiFallback = romaji.isEmpty ? "(?)" : romaji
+                                outputText += "\n(かな: \(kanaFallback))\n(ﾛｰﾏ字: \(romajiFallback))"
                             }
                             status = result.isEmpty ? "❓ No translation found, original text copied" : "✅ Translated"
                         } catch {
@@ -134,11 +137,10 @@ struct TranslateBar: View {
     }
 
     func convertToRomaji(_ text: String) -> String {
-        return RomajiConverter.shared.convert(text)
+        return "Unavailable (requires mecab)"
     }
 
 }
-
 
 class AppDelegate: NSObject, NSApplicationDelegate {
     var statusItem: NSStatusItem!
@@ -221,95 +223,69 @@ struct GlassEffectView: NSViewRepresentable {
     func updateNSView(_ nsView: NSView, context: Context) {}
 }
 
-class RomajiConverter {
-    static let shared = RomajiConverter()
-    private let context = JSContext()
+func runMeCabForKana(text: String) -> String {
+    let task = Process()
+    task.executableURL = URL(fileURLWithPath: "/opt/homebrew/bin/mecab")
+    task.arguments = ["--output-format-type=yomi"]
 
-    init() {
-        let js = """
-        var tokenizer;
-        var ready = false;
+    let inputPipe = Pipe()
+    let outputPipe = Pipe()
 
-        function getReading(text) {
-            var tokens = tokenizer.tokenize(text);
-            var reading = "";
-            for (var i = 0; i < tokens.length; i++) {
-                reading += tokens[i].reading || tokens[i].surface_form;
-            }
-            return reading;
-        }
+    task.standardInput = inputPipe
+    task.standardOutput = outputPipe
 
-        function katakanaToRomaji(input) {
-            const map = {
-                'ア':'a','イ':'i','ウ':'u','エ':'e','オ':'o',
-                'カ':'ka','キ':'ki','ク':'ku','ケ':'ke','コ':'ko',
-                'サ':'sa','シ':'shi','ス':'su','セ':'se','ソ':'so',
-                'タ':'ta','チ':'chi','ツ':'tsu','テ':'te','ト':'to',
-                'ナ':'na','ニ':'ni','ヌ':'nu','ネ':'ne','ノ':'no',
-                'ハ':'ha','ヒ':'hi','フ':'fu','ヘ':'he','ホ':'ho',
-                'マ':'ma','ミ':'mi','ム':'mu','メ':'me','モ':'mo',
-                'ヤ':'ya','ユ':'yu','ヨ':'yo',
-                'ラ':'ra','リ':'ri','ル':'ru','レ':'re','ロ':'ro',
-                'ワ':'wa','ヲ':'wo','ン':'n',
-                'ガ':'ga','ギ':'gi','グ':'gu','ゲ':'ge','ゴ':'go',
-                'ザ':'za','ジ':'ji','ズ':'zu','ゼ':'ze','ゾ':'zo',
-                'ダ':'da','ヂ':'ji','ヅ':'zu','デ':'de','ド':'do',
-                'バ':'ba','ビ':'bi','ブ':'bu','ベ':'be','ボ':'bo',
-                'パ':'pa','ピ':'pi','プ':'pu','ペ':'pe','ポ':'po'
-            };
-            let result = "";
-            for (let i = 0; i < input.length; i++) {
-                let pair = input.slice(i, i + 2);
-                if (map[pair]) {
-                    result += map[pair];
-                    i++;
-                    continue;
-                }
-                let single = input.charAt(i);
-                result += map[single] || single;
-            }
-            return result;
-        }
+    do {
+        try task.run()
+        inputPipe.fileHandleForWriting.write((text + "\n").data(using: .utf8)!)
+        inputPipe.fileHandleForWriting.closeFile()
 
-        function convertJapaneseToRomaji(text) {
-            if (!ready) return "undefined";
-            var reading = getReading(text);
-            return katakanaToRomaji(reading);
-        }
-        """
-        context?.evaluateScript(js)
-
-        let kuromojiLoadScript = """
-        var builder = kuromoji.builder({ dicPath: "https://unpkg.com/kuromoji@0.1.2/dict/" });
-        builder.build(function (err, tkz) {
-            tokenizer = tkz;
-            ready = true;
-        });
-        """
-        context?.evaluateScript(kuromojiLoadScript)
+        let data = outputPipe.fileHandleForReading.readDataToEndOfFile()
+        let output = String(data: data, encoding: .utf8) ?? "(?)"
+        return output.trimmingCharacters(in: .whitespacesAndNewlines)
+    } catch {
+        return "(kana error)"
     }
+}
 
-    func convert(_ text: String) -> String {
-        let task = Process()
-        task.executableURL = URL(fileURLWithPath: "/usr/bin/env")
-        task.arguments = ["python3", "-c", """
-import sys
-from pykakasi import kakasi
-k = kakasi()
-k.setMode("H", "a"); k.setMode("K", "a"); k.setMode("J", "a")
-conv = k.getConverter()
-print(conv.do(sys.argv[1]))
-""", text]
+func runMeCabForRomaji(text: String) -> String {
+    let katakana = runMeCabForKana(text: text)
+    return katakanaToRomaji(katakana)
+}
 
-        let pipe = Pipe()
-        task.standardOutput = pipe
-        do {
-            try task.run()
-        } catch {
-            return "(romaji error)"
+func katakanaToRomaji(_ input: String) -> String {
+    let map: [String: String] = [
+        "ア":"a","イ":"i","ウ":"u","エ":"e","オ":"o",
+        "カ":"ka","キ":"ki","ク":"ku","ケ":"ke","コ":"ko",
+        "サ":"sa","シ":"shi","ス":"su","セ":"se","ソ":"so",
+        "タ":"ta","チ":"chi","ツ":"tsu","テ":"te","ト":"to",
+        "ナ":"na","ニ":"ni","ヌ":"nu","ネ":"ne","ノ":"no",
+        "ハ":"ha","ヒ":"hi","フ":"fu","ヘ":"he","ホ":"ho",
+        "マ":"ma","ミ":"mi","ム":"mu","メ":"me","モ":"mo",
+        "ヤ":"ya","ユ":"yu","ヨ":"yo",
+        "ラ":"ra","リ":"ri","ル":"ru","レ":"re","ロ":"ro",
+        "ワ":"wa","ヲ":"wo","ン":"n",
+        "ガ":"ga","ギ":"gi","グ":"gu","ゲ":"ge","ゴ":"go",
+        "ザ":"za","ジ":"ji","ズ":"zu","ゼ":"ze","ゾ":"zo",
+        "ダ":"da","ヂ":"ji","ヅ":"zu","デ":"de","ド":"do",
+        "バ":"ba","ビ":"bi","ブ":"bu","ベ":"be","ボ":"bo",
+        "パ":"pa","ピ":"pi","プ":"pu","ペ":"pe","ポ":"po"
+    ]
+    var result = ""
+    let chars = Array(input)
+    var i = 0
+    while i < chars.count {
+        let single = String(chars[i])
+        let double = i+1 < chars.count ? single + String(chars[i+1]) : ""
+        if let mapped = map[double] {
+            result += mapped
+            i += 2
+        } else if let mapped = map[single] {
+            result += mapped
+            i += 1
+        } else {
+            result += single
+            i += 1
         }
-
-        let data = pipe.fileHandleForReading.readDataToEndOfFile()
-        return String(data: data, encoding: .utf8)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? text
     }
+    return result
 }
