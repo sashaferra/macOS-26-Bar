@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		D227FE9C2DFF3CF300204127 /* Alamofire in Frameworks */ = {isa = PBXBuildFile; productRef = D227FE9B2DFF3CF300204127 /* Alamofire */; };
-		D227FEA62DFF57B600204127 /* Untitled.txt in Resources */ = {isa = PBXBuildFile; fileRef = D227FEA52DFF57B200204127 /* Untitled.txt */; };
 		D227FEA82DFF57DB00204127 /* read.txt in Resources */ = {isa = PBXBuildFile; fileRef = D227FEA72DFF57CE00204127 /* read.txt */; };
 /* End PBXBuildFile section */
 
@@ -33,7 +32,6 @@
 		D227FE692DFF3C5F00204127 /* TranslateBarNew.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TranslateBarNew.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D227FE762DFF3C6100204127 /* TranslateBarNewTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TranslateBarNewTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		D227FE802DFF3C6100204127 /* TranslateBarNewUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = TranslateBarNewUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		D227FEA52DFF57B200204127 /* Untitled.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = Untitled.txt; sourceTree = "<group>"; };
 		D227FEA72DFF57CE00204127 /* read.txt */ = {isa = PBXFileReference; lastKnownFileType = text; path = read.txt; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -41,16 +39,6 @@
 		D227FE6B2DFF3C5F00204127 /* TranslateBarNew */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			path = TranslateBarNew;
-			sourceTree = "<group>";
-		};
-		D227FE792DFF3C6100204127 /* TranslateBarNewTests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TranslateBarNewTests;
-			sourceTree = "<group>";
-		};
-		D227FE832DFF3C6100204127 /* TranslateBarNewUITests */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = TranslateBarNewUITests;
 			sourceTree = "<group>";
 		};
 /* End PBXFileSystemSynchronizedRootGroup section */
@@ -85,10 +73,7 @@
 			isa = PBXGroup;
 			children = (
 				D227FEA72DFF57CE00204127 /* read.txt */,
-				D227FEA52DFF57B200204127 /* Untitled.txt */,
 				D227FE6B2DFF3C5F00204127 /* TranslateBarNew */,
-				D227FE792DFF3C6100204127 /* TranslateBarNewTests */,
-				D227FE832DFF3C6100204127 /* TranslateBarNewUITests */,
 				D227FE9A2DFF3CF300204127 /* Frameworks */,
 				D227FE6A2DFF3C5F00204127 /* Products */,
 			);
@@ -150,9 +135,6 @@
 			dependencies = (
 				D227FE782DFF3C6100204127 /* PBXTargetDependency */,
 			);
-			fileSystemSynchronizedGroups = (
-				D227FE792DFF3C6100204127 /* TranslateBarNewTests */,
-			);
 			name = TranslateBarNewTests;
 			packageProductDependencies = (
 			);
@@ -172,9 +154,6 @@
 			);
 			dependencies = (
 				D227FE822DFF3C6100204127 /* PBXTargetDependency */,
-			);
-			fileSystemSynchronizedGroups = (
-				D227FE832DFF3C6100204127 /* TranslateBarNewUITests */,
 			);
 			name = TranslateBarNewUITests;
 			packageProductDependencies = (
@@ -235,7 +214,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				D227FEA62DFF57B600204127 /* Untitled.txt in Resources */,
 				D227FEA82DFF57DB00204127 /* read.txt in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
